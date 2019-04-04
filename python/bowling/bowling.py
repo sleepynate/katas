@@ -15,6 +15,11 @@ class BowlingScoreTests(unittest.TestCase):
         roll_count = len(Game('9- 9- 9- 9- 9- 9- 9- 9- 9- 9-').rolls)
         self.assertEqual(roll_count, 20)
 
+    def test_can_parse_very_short_game(self):
+        """Can parse a very short game"""
+        roll_count = len(Game('1').rolls)
+        self.assertEqual(roll_count, 1)
+
 class FlattenTests(unittest.TestCase):
     def test_can_flatten_list(self):
         """Can flatten a list of lists to a 1-dimensional list"""
