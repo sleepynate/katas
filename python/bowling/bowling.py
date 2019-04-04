@@ -32,6 +32,14 @@ class BowlingScoreTests(unittest.TestCase):
         """Can score a game with only one roll"""
         self.assertEqual(Game('9-').score(), 9)
 
+    def test_can_score_no_pickup_score_sheet(self):
+        """Can score sheet with no pickup rolls"""
+        self.assertEqual(Game('9- 9- 9- 9- 9- 9- 9- 9- 9- 9-').score(), 90)
+
+    def test_can_score_one_strike_score_sheet(self):
+        """Can score sheet with a strike"""
+        self.assertEqual(Game('X 9- 9- 9- 9- 9- 9- 9- 9- 9-').score(), 100)
+
 class FlattenTests(unittest.TestCase):
     def test_can_flatten_list(self):
         """Can flatten a list of lists to a 1-dimensional list"""
@@ -47,7 +55,16 @@ class Game:
         self.rolls = flatten(scoresheet_by_frame)
 
     def score(self):
+        def char_to_score(n):
+            if n is 'X': return 10
+            elif n is '-': return 0
+            else: return int(n)
+
         sum = 0
-        for roll in self.rolls:
-            sum += 0 if roll == '-' else int(roll)
+
+        for i, roll in enumerate(self.rolls):
+            if roll is 'X':
+                sum += char_to_score('X') + char_to_score(self.rolls[i+1]) + char_to_score(self.rolls[i+2])
+            else:
+                sum += char_to_score(roll)
         return sum
