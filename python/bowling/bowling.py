@@ -40,6 +40,10 @@ class BowlingScoreTests(unittest.TestCase):
         """Can score sheet with a strike"""
         self.assertEqual(Game('X 9- 9- 9- 9- 9- 9- 9- 9- 9-').score(), 100)
 
+    def test_can_score_all_strike_score_sheet(self):
+        """Can parse score sheet with all strikes"""
+        self.assertEqual(Game('X X X X X X X X X X X X').score(), 300)
+
 class FlattenTests(unittest.TestCase):
     def test_can_flatten_list(self):
         """Can flatten a list of lists to a 1-dimensional list"""
@@ -62,9 +66,26 @@ class Game:
 
         sum = 0
 
+        frames_complete = 0
+
+        in_frame = False
+
         for i, roll in enumerate(self.rolls):
             if roll is 'X':
-                sum += char_to_score('X') + char_to_score(self.rolls[i+1]) + char_to_score(self.rolls[i+2])
+                sum += char_to_score('X')
+                if i+1 < len(self.rolls): sum += char_to_score(self.rolls[i+1])
+                if i+2 < len(self.rolls): sum += char_to_score(self.rolls[i+2])
+                frames_complete += 1
+                in_frame = False
             else:
                 sum += char_to_score(roll)
+                if in_frame:
+                    frames_complete += 1
+                    in_frame = False
+                else:
+                    in_frame = not in_frame
+
+            if frames_complete == 10:
+                break
+
         return sum
